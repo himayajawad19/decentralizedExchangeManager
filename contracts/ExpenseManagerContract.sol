@@ -1,39 +1,46 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.29;
+pragma solidity ^0.8.19;
 
-// Defining the contract -- contract is like a class
 contract ExpenseManagerContract {
     address public owner;
-    // Define the model
+
+    event Deposit(
+        address indexed _from,
+        uint _amount,
+        string _reason,
+        uint _timestamp
+    );
+    event Withdrawal(
+        address indexed _to,
+        uint _amount,
+        string _reason,
+        uint _timestamp
+    );
+
     struct Transaction {
         address user;
         uint amount;
         string reason;
         uint timestamp;
     }
+
+    mapping(address => uint) public balances;
     Transaction[] public transactions;
+
     constructor() {
         owner = msg.sender;
     }
-    mapping(address => uint) public balances;
-    event Deposit(
-        address indexed _from,
-        uint _amount,
-        string _reason,
-        uint timeStamp
-    );
-    event Withdraw(
-        address indexed _to,
-        uint _amount,
-        string _reason,
-        uint timeStamp
-    );
+
     modifier onlyOwner() {
-        require(msg.sender == owner, "Not the contract owner");
+        require(
+            msg.sender == owner,
+            "Only contract owner can call this function"
+        );
         _;
     }
+
     function deposit(uint _amount, string memory _reason) public payable {
-        require(_amount > 0, "Deposit amount should be greater than 0");
+        require(_amount > 0, "Deposit amount must be greater than 0");
         balances[msg.sender] += _amount;
         transactions.push(
             Transaction(msg.sender, _amount, _reason, block.timestamp)
@@ -42,26 +49,30 @@ contract ExpenseManagerContract {
     }
 
     function withdraw(uint _amount, string memory _reason) public {
-        require(balances[msg.sender] >= _amount, "Insufficient Balance");
+        require(balances[msg.sender] >= _amount, "Insufficient balance");
         balances[msg.sender] -= _amount;
         transactions.push(
             Transaction(msg.sender, _amount, _reason, block.timestamp)
         );
         payable(msg.sender).transfer(_amount);
-        emit Withdraw(msg.sender, _amount, _reason, block.timestamp);
+        emit Withdrawal(msg.sender, _amount, _reason, block.timestamp);
     }
 
     function getBalance(address _account) public view returns (uint) {
         return balances[_account];
     }
-    function getTransaction() public view returns (uint) {
+
+    function getTransactionsCount() public view returns (uint) {
         return transactions.length;
     }
 
-    function getTransactionCount(
+    function getTransaction(
         uint _index
     ) public view returns (address, uint, string memory, uint) {
-        require(_index < transactions.length, "Index out of bound");
+        require(
+            _index < transactions.length,
+            "Transaction index out of bounds"
+        );
         Transaction memory transaction = transactions[_index];
         return (
             transaction.user,
@@ -70,7 +81,8 @@ contract ExpenseManagerContract {
             transaction.timestamp
         );
     }
-    function getAllTransaction()
+
+    function getAllTransactions()
         public
         view
         returns (
@@ -81,16 +93,18 @@ contract ExpenseManagerContract {
         )
     {
         address[] memory users = new address[](transactions.length);
-        uint[] memory amount = new uint[](transactions.length);
-        string[] memory reason = new string[](transactions.length);
-        uint[] memory timeStamp = new uint[](transactions.length);
-        for (uint i = 0; i <= transactions.length; i++) {
+        uint[] memory amounts = new uint[](transactions.length);
+        string[] memory reasons = new string[](transactions.length);
+        uint[] memory timestamps = new uint[](transactions.length);
+
+        for (uint i = 0; i < transactions.length; i++) {
             users[i] = transactions[i].user;
-            amount[i] = transactions[i].amount;
-            reason[i] = transactions[i].reason;
-            timeStamp[i] = transactions[i].timestamp;
+            amounts[i] = transactions[i].amount;
+            reasons[i] = transactions[i].reason;
+            timestamps[i] = transactions[i].timestamp;
         }
-        return (users, amount, reason, timeStamp);
+
+        return (users, amounts, reasons, timestamps);
     }
 
     function changeOwner(address _newOwner) public onlyOwner {

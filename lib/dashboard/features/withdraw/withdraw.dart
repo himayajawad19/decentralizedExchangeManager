@@ -1,15 +1,21 @@
+import 'package:decentralized_app/dashboard/bloc/dashboard_bloc.dart';
+import 'package:decentralized_app/models/transactions_model.dart';
 import 'package:decentralized_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Withdraw extends StatefulWidget {
-  const Withdraw({super.key});
+  final DashboardBloc dashboardBloc;
+  const Withdraw({super.key, required this.dashboardBloc});
 
   @override
   State<Withdraw> createState() => _WithdrawState();
 }
 
 class _WithdrawState extends State<Withdraw> {
+   TextEditingController addressController = TextEditingController(text: "0x59FcBA3ccb1F3FA2e1Cb67eC328f8f58E80A8A0E");
+  TextEditingController amountController = TextEditingController();
+  TextEditingController reasonController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return  GestureDetector(
@@ -22,7 +28,7 @@ class _WithdrawState extends State<Withdraw> {
         appBar: AppBar(
           backgroundColor: AppColors.backgroundColor,
           title: Text(
-            "Deposit Funds",
+            "Withdraw Funds",
             style: TextStyle(fontWeight: FontWeight.w600),
           ),
           centerTitle: true,
@@ -34,7 +40,7 @@ class _WithdrawState extends State<Withdraw> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "To deposit funds, enter your wallet address, the amount you wish to send, and an optional reason for the transaction. Make sure the address is correct before confirming your transfer.",
+                  "To withdraw funds, provide the recipient's wallet address, the amount you want to send, and an optional note or reason. Double-check the address before proceeding, as crypto transactions are irreversible."
                 ),
                 SizedBox(height: 16.sp),
                 Text(
@@ -42,6 +48,7 @@ class _WithdrawState extends State<Withdraw> {
                   style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w400),
                 ),
                 TextField(
+                  controller: addressController,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(border: OutlineInputBorder(), ),
                 ),
@@ -51,6 +58,7 @@ class _WithdrawState extends State<Withdraw> {
                   style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w400),
                 ),
                 TextField(
+                  controller: amountController,
                   keyboardType: TextInputType.numberWithOptions(),
                   decoration: InputDecoration(border: OutlineInputBorder()),
                 ),
@@ -60,6 +68,7 @@ class _WithdrawState extends State<Withdraw> {
                   style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w400),
                 ),
                 TextField(
+                  controller:  reasonController,
                   decoration: InputDecoration(border: OutlineInputBorder()),
                 ),
                 SizedBox(height: 16.sp),
@@ -67,12 +76,24 @@ class _WithdrawState extends State<Withdraw> {
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          widget.dashboardBloc.add(DashboardWithdrawEvent(
+                    transactionModel: TransactionsModel(
+                      address: 
+                        addressController.text,
+                        amount: 
+                        int.parse(amountController.text),
+                        reason: 
+                        reasonController.text,
+                        timeStamp: 
+                        DateTime.now())));
+                Navigator.pop(context);
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.accentColor,
                         ),
                         child: Text(
-                          "Deposit",
+                          "Withdraw",
                           style: TextStyle(color: Colors.white, fontSize: 16.sp),
                         ),
                       ),

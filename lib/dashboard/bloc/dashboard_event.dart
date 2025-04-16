@@ -18,3 +18,5 @@ class DashboardWithdrawEvent extends DashboardEvent {
   DashboardWithdrawEvent({
     required this.transactionModel,
   });}
+
+  

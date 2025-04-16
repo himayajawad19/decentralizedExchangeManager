@@ -1,15 +1,21 @@
+import 'package:decentralized_app/dashboard/bloc/dashboard_bloc.dart';
+import 'package:decentralized_app/models/transactions_model.dart';
 import 'package:decentralized_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Deposit extends StatefulWidget {
-  const Deposit({super.key});
+    final DashboardBloc dashboardBloc;
+  const Deposit({super.key,  required this.dashboardBloc});
 
   @override
   State<Deposit> createState() => _DepositState();
 }
 
 class _DepositState extends State<Deposit> {
+  TextEditingController addressController = TextEditingController(text: "0x59FcBA3ccb1F3FA2e1Cb67eC328f8f58E80A8A0E");
+  TextEditingController amountController = TextEditingController();
+  TextEditingController reasonController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -42,6 +48,9 @@ class _DepositState extends State<Deposit> {
                   style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w400),
                 ),
                 TextField(
+                  readOnly: true,
+                  
+                  controller: addressController,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(border: OutlineInputBorder(), ),
                 ),
@@ -51,6 +60,7 @@ class _DepositState extends State<Deposit> {
                   style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w400),
                 ),
                 TextField(
+                  controller: amountController,
                   keyboardType: TextInputType.numberWithOptions(),
                   decoration: InputDecoration(border: OutlineInputBorder()),
                 ),
@@ -60,6 +70,7 @@ class _DepositState extends State<Deposit> {
                   style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w400),
                 ),
                 TextField(
+                  controller: reasonController,
                   decoration: InputDecoration(border: OutlineInputBorder()),
                 ),
                 SizedBox(height: 16.sp),
@@ -67,7 +78,19 @@ class _DepositState extends State<Deposit> {
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                              widget.dashboardBloc.add(DashboardDepositEvent(
+                    transactionModel: TransactionsModel(
+                      address: 
+                        addressController.text,
+                        amount: 
+                        int.parse(amountController.text),
+                        reason: 
+                        reasonController.text,
+                        timeStamp: 
+                        DateTime.now())));
+                Navigator.pop(context);
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.accentColor,
                         ),

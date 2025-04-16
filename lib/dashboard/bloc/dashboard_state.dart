@@ -13,5 +13,14 @@ class DashboardErrorState extends DashboardState{
   
 }
 class DashboardSuccessState extends DashboardState{
-  
+  final List<TransactionsModel> transactions;
+  final int balance;
+
+  DashboardSuccessState({required this.transactions, required this.balance});
+}
+
+class DashboardThemeState extends DashboardState{
+final bool themeState;
+
+  DashboardThemeState({required this.themeState});
 }

@@ -22,10 +22,7 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
         title: 'Crypto Expense Manager',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-      
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        ),
+       
         home: DashboardPage()
       );
       }
